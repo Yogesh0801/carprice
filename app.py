@@ -1,64 +1,70 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import pickle
+from tkinter import *
 import joblib
-from xgboost import XGBRegressor
-
-Fuel_Type  = {'Petrol':0,'Diesel':1, 'CNG':2,}
-
-Seller_Type  = {'Dealer':0, 'Individual':1,}
-
-Transmission  = {'Manual':0, 'Automatic':1,}
-
-
-
-# Loading the Model pickle file
-#model =  pickle.load(open('xg_model.pkl','rb'))
-model = joblib.load(open('xg_model1.pkl','rb'))
-
-# Creating the function funtion to accept inputs and creating an 2d array and predicting the result.
-
-def predict(Present_Price,Kms_Driven,Fuel_Types
-                       ,Seller_Types,Transmissions,Owner,Age):
-    """Function To accept the values"""
-    fuel_type = Fuel_Type[Fuel_Types]
-    seller_type = Seller_Type[Seller_Types]
-    transmission = Transmission[Transmissions]
+import pandas as pd
+master = Tk()
+master.title("used car price prediction ")
+master.geometry("1200x1500")
+master.config(bg= 'red')
+def predict():
+    p1 = float(e1.get())
+    p2 = float(e2.get())
+    p3 = float(e3.get())
+    p4 = float(e4.get())
+    p5 = float(e5.get())
+    p6 = float(e6.get())
+    p7 = float(e7.get())
+    model = joblib.load('carpricepredictor')
     data_new = pd.DataFrame({
-        'Present_Price':Present_Price,
-        'Kms_Driven':Kms_Driven,
-        'Fuel_Type':fuel_type,
-        'Owner':Owner,
-        'Age':Age,
-        'Seller_Type':seller_type,
-        'Transmission':transmission
-        
-    },index=[0])
-    print(data_new)
-    
-    result = model.predict(data_new)[0].round(2)
-    
-    return result.round(2)
+        'Present_Price':p1,
+        'Kms_Driven':p2,
+        'Fuel_Type':p3,
+        'Seller_Type':p4,
+        'Transmission':p5,
+        'Owner':p6,
+        'Age':p7
+        },index=[0])
+    result = model.predict(data_new)
+    Label(master,text="Car Selling/Puchasing amount..",
+          font=("times",24,'bold')).place(x=200,y=600)
+    Label(master,text=str(result[0]),
+          font=("times",24,'bold')).place(x=700,y=600)
+    print(result[0])
+label = Label(text="Welcome to Car Price prediction app",
+              bg='black',fg='white',
+              font=("times",24,'bold'))
+label.place(x=300,y=50)
+Label(master,text='Present_price',
+      font=("Helvetica",18,'bold')).place(x=200,y=150)
+Label(master,text='KMS Driven',font=("Helvetica",18,'bold')).place(x=200,y=200)
+Label(master,text='Fuel type',font=("Helvetica",18,'bold')).place(x=200,y=250)
+Label(master,text='Seller type',font=("Helvetica",18,'bold')).place(x=200,y=300)
+Label(master,text='Transmission',font=("Helvetica",18,'bold')).place(x=200,y=350)
+Label(master,text='Owner',font=("Helvetica",18,'bold')).place(x=200,y=400)
+Label(master,text='Age',font=("Helvetica",18,'bold')).place(x=200,y=450)
+e1 = Entry(master,font=("Helvetica",18,'bold'))
+e1.place(x=400,y=150)
+e2 = Entry(master,font=("Helvetica",18,'bold'))
+e2.place(x=400,y=200)
+e3 = Entry(master,font=("Helvetica",18,'bold'))
+e3.place(x=400,y=250)
+e4 = Entry(master,font=("Helvetica",18,'bold'))
+e4.place(x=400,y=300)
+e5 = Entry(master,font=("Helvetica",18,'bold'))
+e5.place(x=400,y=350)
+e6 = Entry(master,font=("Helvetica",18,'bold'))
+e6.place(x=400,y=400)
+e7 = Entry(master,font=("Helvetica",18,'bold'))
+e7.place(x=400,y=450)
+Button(master,text='predict price',command=predict,font=("Helvetica",18,'bold')).place(x=300,y=500)
+Button(master,text='Exit',command=master.destroy,font=("Helvetica",18,
+                                  'bold')).place(x=500,y=500)
+mainloop()
 
 
 
-if __name__=="__main__":
-    st.header("Car Price Prediction")
-    col1,col2 = st.columns([2,1])
-    Present_Price = col1.slider("Present_Price",max_value=3000000,min_value=800000)
-    Kms_Driven = col1.slider("Kms_Driven",max_value=50000,min_value=1000)
-    fuel_type = col1.selectbox("Fuel_type:",list(Fuel_Type.keys()))
-    seller_type = col2.selectbox("Seller_type:",list(Seller_Type.keys()))
-    transmission = col2.selectbox("Transmission:",list(Transmission.keys()))
-    Owner = col2.selectbox("Owner:",list(range(0,3)))#list(Owner.keys()))
-    Age = col1.selectbox("Select Age:",list(range(1,15)))
-    result = predict(Present_Price,Kms_Driven,fuel_type,seller_type,transmission,Owner,Age).round(2)
-    print(result)
-    submit_button = st.button("Predict")
-    if submit_button:
-        larger_text = f"<h2 style='color: white;'>The Predicted Price is : {result} Lakhs</h2>"
-        st.markdown(larger_text,unsafe_allow_html=True)
+
+
+
 
 
 
